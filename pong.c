@@ -253,8 +253,8 @@ void setVars() {
     if (!(height % 2)) oby = by += rand() % 2;
     sdelay = 100 / speed;
     ppos[0] = ppos[1] = (height - 2) / 2 - (pheight + 1) / 2;
-    bxs = ((rand() % 2) * 2 - 1) * ((rand() % 5) + 3);
-    bys = ((rand() % 2) * 2 - 1) * ((rand() % 5) + 3);
+    bys = ((rand() % 2) * 2 - 1) * ((rand() % 4) + 2);
+    bxs = (6 - abs(bys)) * ((rand() % 2) * 2 - 1);
 }
 
 bool key(char k) {
@@ -358,8 +358,8 @@ int main(int argc, char* argv[]) {
             ppos[1] += d[1];
             d[0] = d[1] = 0;
             bx += (bxs / 5);
-            if (bx <= 5 && chkp(0) && bxs < 0) {bxs *= -1; bx = 5;}
-            if (bx > width - 8 && chkp(1) && bxs > 0) {bxs *= -1; bx = width - 8;}
+            if (bx <= 5 && chkp(0) && bxs < 0) {bxs *= -1; bx = 5; c[0] = 0;}
+            if (bx > width - 8 && chkp(1) && bxs > 0) {bxs *= -1; bx = width - 8; c[1] = 0;}
             if (bx <= 0) {bxs *= -1; bx = 0;}
             if (bx > width - 3) {bxs *= -1; bx = width - 3;}
             by += (bys / 10);
