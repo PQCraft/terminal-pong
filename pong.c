@@ -342,6 +342,7 @@ int main(int argc, char* argv[]) {
     int c[] = {0, 0};
     while (1) {
         kbget();
+        if (key('\e')) break;
         if (key('Q') && ppos[0] > 0) {d[0] = -1; c[0] = 0;}
         if (key('Z') && ppos[0] + pheight < height - 2) {d[0] = 1; c[0] = 0;}
         if ((key('A') || key('a') && !kbin[1])) c[0] = 0;
