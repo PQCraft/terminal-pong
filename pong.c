@@ -20,7 +20,7 @@
     //#define ASCII 
 #endif
 
-char VER[] = "0.1";
+char VER[] = "0.2";
 
 #ifndef ASCII
 wchar_t* logo[] = {
@@ -32,11 +32,11 @@ wchar_t* logo[] = {
 };
 #else
 wchar_t* logo[] = {
-    (wchar_t[]){L"████   ████  █   █  ████"},
-    (wchar_t[]){L"█   █ ████▒█ ██  █ █"},
-    (wchar_t[]){L"████  ██████ █ █ █ █  ██"},
-    (wchar_t[]){L"█     ██████ █  ██ █   █"},
-    (wchar_t[]){L"█      ████  █   █  ████"},
+    (wchar_t[]){L"####   @@@@  #   #  ####"},
+    (wchar_t[]){L"#   # @@@@#@ ##  # #"},
+    (wchar_t[]){L"####  @@@@@@ # # # #  ##"},
+    (wchar_t[]){L"#     @@@@@@ #  ## #   #"},
+    (wchar_t[]){L"#      @@@@  #   #  ####"},
 };
 #endif
 
@@ -137,9 +137,11 @@ void kbget() {
 #ifndef ASCII
 wchar_t boxchars[] = {L'─', L'│', L'┌', L'┐', L'└', L'┘'};
 wchar_t bchar = L'●';
+wchar_t pchar = L'█';
 #else
 wchar_t boxchars[] = {L'-', L'|', L'.', L'.', L'\'', L'\''};
 wchar_t bchar = L'O';
+wchar_t pchar = L'$';
 #endif
 
 void putlogo(int xp, int yp) {
@@ -221,7 +223,7 @@ void drawScreen() {
     wprintf(L"\e[2;6H");
     for (int i = 2; i < height; i++) {
         if (i - 1 > ppos[0] && i < pmax) {
-            putwchar(L'█');
+            putwchar(pchar);
         } else {
             putwchar(L' ');
         }
@@ -231,7 +233,7 @@ void drawScreen() {
     wprintf(L"\e[2;%dH", width - 5);
     for (int i = 2; i < height; i++) {
         if (i - 1 > ppos[1] && i < pmax) {
-            putwchar(L'█');
+            putwchar(pchar);
         } else {
             putwchar(L' ');
         }
@@ -253,8 +255,8 @@ void setVars() {
     if (!(height % 2)) oby = by += rand() % 2;
     sdelay = 100 / speed;
     ppos[0] = ppos[1] = (height - 2) / 2 - (pheight + 1) / 2;
-    bys = ((rand() % 2) * 2 - 1) * ((rand() % 4) + 2);
-    bxs = (6 - abs(bys)) * ((rand() % 2) * 2 - 1);
+    bxs = ((rand() % 2) * 2 - 1) * ((rand() % 4) + 2);
+    bys = (6 - abs(bxs)) * ((rand() % 2) * 2 - 1);
 }
 
 bool key(char k) {
@@ -262,7 +264,7 @@ bool key(char k) {
 }
 
 bool chkp(int p) {
-    return (by >= ppos[p] && by < ppos[p] + pheight);
+    return (by >= ppos[p] && by <= ppos[p] + pheight);
 }
 
 int main(int argc, char* argv[]) {
