@@ -20,7 +20,7 @@
     //#define ASCII 
 #endif
 
-char VER[] = "0.2";
+char VER[] = "0.3";
 
 #ifndef ASCII
 wchar_t* logo[] = {
@@ -285,7 +285,7 @@ int main(int argc, char* argv[]) {
                 exit = true;
             } else if (!strcmp(argv[i], "--help") || !strcmp(argv[i], "-h")) {
                 if (argc > 2) {fputs("Incorrect number of options passed.\n", stderr); c_exit(EINVAL);}
-                printf("Usage: %s [options] [{--file|-f}] [file] [options]\n", argv[0]);
+                printf("Usage: %s [options]\n", argv[0]);
                 puts("Options:");
                 puts("  -h, --help          Shows this help text.");
                 puts("  -v, --version       Shows the version and copyright information.");
