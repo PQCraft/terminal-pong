@@ -20,7 +20,7 @@
     //#define ASCII 
 #endif
 
-char VER[] = "0.3";
+char VER[] = "0.4";
 
 #ifndef ASCII
 wchar_t* logo[] = {
@@ -208,6 +208,7 @@ void fancyClear() {
 }
 
 int ppos[] = {0, 0};
+int c[] = {0, 0};
 double bx, by, obx, oby, bxs, bys;
 int phpercent, pheight, speed, sdelay, score[] = {0, 0};
 
@@ -215,12 +216,7 @@ void drawScreen() {
     int pmax = ppos[0] + pheight + 2;
     FILE* ret = freopen(NULL, "w", stdout);
     (void)ret;
-    wprintf(L"\e[s\e[%d;%dH ", (int)(oby + 2), (int)(obx + 2));
-    wprintf(L"\e[%d;%dH", (int)(by + 2), (int)(bx + 2), bchar);
-    putwchar(bchar);
-    obx = bx;
-    oby = by;
-    wprintf(L"\e[2;6H");
+    wprintf(L"\e[s\e[2;6H");
     for (int i = 2; i < height; i++) {
         if (i - 1 > ppos[0] && i < pmax) {
             putwchar(pchar);
@@ -239,24 +235,39 @@ void drawScreen() {
         }
         wprintf(L"\e[D\e[B");
     }
+    wprintf(L"\e[%d;%dH ", (int)(oby + 2), (int)(obx + 2));
+    wprintf(L"\e[%d;%dH", (int)(by + 2), (int)(bx + 2), bchar);
+    putwchar(bchar);
+    obx = bx;
+    oby = by;
     ret = freopen(NULL, "w", stdout);
     (void)ret;
     printf("\e[u");
     fflush(stdout);
 }
 
+void randb() {
+    bool n = (bool)(bxs < 0);
+    bxs = (((rand() % 2) * 2 - 1) * ((rand() % 4) + 2)) * (1 - n * 2);
+    bys = (6 - abs(bxs)) * ((rand() % 2) * 2 - 1);
+}
+
+void resetb() {
+    bx = (width - 2) / 2 - 1;
+    if (!(width % 2)) bx += rand() % 2;
+    by = (height - 2) / 2 - 1;
+    if (!(height % 2)) by += rand() % 2;
+}
+
 void setVars() {
     speed = 2;
     phpercent = 25;
     pheight = ((double)height - 2) / (100 / (double)phpercent);
-    obx = bx = (width - 2) / 2 - 1;
-    if (!(width % 2)) obx = bx += rand() % 2;
-    oby = by = (height - 2) / 2 - 1;
-    if (!(height % 2)) oby = by += rand() % 2;
-    sdelay = 100 / speed;
+    resetb();
+    obx = bx; oby = by;
+    sdelay = 90 / speed;
     ppos[0] = ppos[1] = (height - 2) / 2 - (pheight + 1) / 2;
-    bxs = ((rand() % 2) * 2 - 1) * ((rand() % 4) + 2);
-    bys = (6 - abs(bxs)) * ((rand() % 2) * 2 - 1);
+    randb();
 }
 
 bool key(char k) {
@@ -265,6 +276,29 @@ bool key(char k) {
 
 bool chkp(int p) {
     return (by >= ppos[p] && by <= ppos[p] + pheight);
+}
+
+void dscore() {
+    putbox(1, 1, width, height);
+    printf("\e[s\e[1;3HP1:\e[C[%d]", score[0]);
+    char buf[16];
+    sprintf(buf, "%d", score[1]);
+    printf("\e[1;%dHP2:\e[C[%s]\e[u", width - (int)strlen(buf) - 7, buf);
+    fflush(stdout);
+}
+
+void pscore(int p) {
+    score[p]++;
+    putbox(1, 1, width, height);
+    for (int i = 0; i < 3; i++) {
+        printf("\e[s\e[1;%dHP%d Scores!\e[u", (int)(width / 2 - 5) + 1, p + 1);
+        fflush(stdout);
+        delay(500);
+        putbox(1, 1, width, height);
+        delay(500);
+    }
+    c[0] = c[1] = 0;
+    dscore();   
 }
 
 int main(int argc, char* argv[]) {
@@ -335,13 +369,11 @@ int main(int argc, char* argv[]) {
     }
     fancyClear();
     putbox(1, 1, width, height);
-    //cur:
-    //A=up B=down D=left C=right
     setVars();
     drawScreen();
+    dscore();
     uint64_t tval = timems() + sdelay;
     int d[] = {0, 0};
-    int c[] = {0, 0};
     while (1) {
         kbget();
         if (key('\e')) break;
@@ -360,10 +392,10 @@ int main(int argc, char* argv[]) {
             ppos[1] += d[1];
             d[0] = d[1] = 0;
             bx += (bxs / 5);
-            if (bx <= 5 && chkp(0) && bxs < 0) {bxs *= -1; bx = 5; c[0] = 0;}
-            if (bx > width - 8 && chkp(1) && bxs > 0) {bxs *= -1; bx = width - 8; c[1] = 0;}
-            if (bx <= 0) {bxs *= -1; bx = 0;}
-            if (bx > width - 3) {bxs *= -1; bx = width - 3;}
+            if (bx <= 5 && chkp(0) && bxs < 0) {bxs *= -1; randb(); bx = 5; c[0] = 0;}
+            if (bx > width - 8 && chkp(1) && bxs > 0) {bxs *= -1; randb(); bx = width - 8; c[1] = 0;}
+            if (bx <= 0) {pscore(1); bxs *= -1; resetb();}
+            if (bx > width - 3) {pscore(0); bxs *= -1; resetb();}
             by += (bys / 10);
             if (by <= 0) {bys *= -1; by = 0;}
             if (by > height - 3) {bys *= -1; by = height - 3;}
