@@ -20,7 +20,7 @@
     //#define ASCII 
 #endif
 
-char VER[] = "0.4";
+char VER[] = "0.5";
 
 #ifndef ASCII
 wchar_t* logo[] = {
@@ -249,7 +249,7 @@ void drawScreen() {
 void randb() {
     bool n = (bool)(bxs < 0);
     bxs = (((rand() % 2) * 2 - 1) * ((rand() % 4) + 2)) * (1 - n * 2);
-    bys = (6 - abs(bxs)) * ((rand() % 2) * 2 - 1);
+    bys = (6 - fabs(bxs)) * ((rand() % 2) * 2 - 1);
 }
 
 void resetb() {
