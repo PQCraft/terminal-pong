@@ -11,6 +11,7 @@
 #include <inttypes.h>
 #include <wchar.h>
 #include <locale.h>
+#include <math.h>
 
 #ifndef ASCII
     /*
